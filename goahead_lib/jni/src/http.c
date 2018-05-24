@@ -1083,7 +1083,8 @@ static void parseHeaders(Webs *wp)
                     return;
                 }
             } else {
-                if (wp->rxLen > ME_GOAHEAD_LIMIT_POST) {
+                //if (wp->rxLen > ME_GOAHEAD_LIMIT_POST) {
+                if (wp->rxLen > ME_GOAHEAD_LIMIT_UPLOAD) {
                     websError(wp, HTTP_CODE_REQUEST_TOO_LARGE | WEBS_CLOSE, "Too big");
                     return;
                 }
@@ -2411,11 +2412,14 @@ static int setLocalHost()
 	struct ifreq ifr;         
         LOGD("%s(%d)\n", __FUNCTION__, __LINE__);
 	sockfd = socket(AF_INET, SOCK_DGRAM, 0);      
+
+        
 	if (sockfd == -1)   {    
                 LOGD("%s(%d)\n", __FUNCTION__, __LINE__);
 		return -1;            
 	}         
-	strncpy(ifr.ifr_name, "eth0", IFNAMSIZ);    // 指定网卡  
+	strncpy(ifr.ifr_name, "eth0", IFNAMSIZ - 1);    // 指定网卡  
+	ifr.ifr_addr.sa_family = AF_INET;
 	ifr.ifr_name[IFNAMSIZ - 1] = 0;       
 	if (ioctl(sockfd, SIOCGIFADDR, &ifr) < 0)    {     
                 LOGD("%s(%d)\n", __FUNCTION__, __LINE__);
@@ -2447,6 +2451,7 @@ static int setLocalHost()
 
 #else
 {
+/*
     struct hostent  *hp;
     LOGD("%s(%d)\n", __FUNCTION__, __LINE__);
     if ((hp = gethostbyname(host)) == NULL) {
@@ -2454,12 +2459,41 @@ static int setLocalHost()
         LOGD("Cannot get host address for host %s: errno %d", host, errno);
         //return -1;
     }
-    //memcpy((char*) &intaddr, (char *) hp->h_addr_list[0], (size_t) hp->h_length);
-    //ipaddr = inet_ntoa(intaddr);
-    //websSetIpAddr(ipaddr);
-    //websSetHost(ipaddr);
-    websSetIpAddr("192.168.251.56");
-    websSetHost("192.168.251.56");
+    memcpy((char*) &intaddr, (char *) hp->h_addr_list[0], (size_t) hp->h_length);
+    ipaddr = inet_ntoa(intaddr);
+    LOGD("%s(%d)ipaddr=%s\n", __FUNCTION__, __LINE__, ipaddr);
+    websSetIpAddr(ipaddr);
+    websSetHost(ipaddr);
+    */
+    //websSetIpAddr("192.168.8.10");
+    //websSetHost("192.168.8.10");
+
+    int sockfd;   
+        struct sockaddr_in sin;   
+        struct ifreq ifr;         
+            LOGD("%s(%d)\n", __FUNCTION__, __LINE__);
+        sockfd = socket(AF_INET, SOCK_DGRAM, 0);      
+    
+            
+        if (sockfd == -1)   {    
+                    LOGD("%s(%d)\n", __FUNCTION__, __LINE__);
+            return -1;            
+        }         
+        strncpy(ifr.ifr_name, "eth0", IFNAMSIZ - 1);    // 指定网卡  
+        ifr.ifr_addr.sa_family = AF_INET;
+        ifr.ifr_name[IFNAMSIZ - 1] = 0;       
+        if (ioctl(sockfd, SIOCGIFADDR, &ifr) < 0)    {     
+                    LOGD("%s(%d)\n", __FUNCTION__, __LINE__);
+            return -1;    
+        }     
+        memcpy(&sin, &ifr.ifr_addr, sizeof(sin));     
+        ipaddr=inet_ntoa(sin.sin_addr); 
+            LOGD("%s(%d)ipaddr=%s\n", __FUNCTION__, __LINE__, ipaddr);
+            websSetIpAddr(ipaddr);
+            websSetHost(ipaddr);
+            
+
+    LOGD("(%s:%d)finished\n", __FILE__, __LINE__);
 }
 #endif
     return 0;

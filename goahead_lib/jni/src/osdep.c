@@ -53,7 +53,7 @@ PUBLIC char *websTempFile(char *dir, char *prefix)
 #elif VXWORKS
         dir = ".";
 #else
-        dir = "/tmp";
+        dir = ME_GOAHEAD_UPLOAD_DIR;//"/tmp";
 #endif
     }
     if (!prefix) {

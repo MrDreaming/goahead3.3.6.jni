@@ -453,7 +453,7 @@ PUBLIC void websUploadOpen()
 #if ME_WIN_LIKE
         uploadDir = getenv("TEMP");
 #else
-        uploadDir = "/tmp";
+        uploadDir = ME_GOAHEAD_UPLOAD_DIR;//uploadDir = "/tmp";
 #endif
     }
     trace(4, "Upload directory is %s", uploadDir);

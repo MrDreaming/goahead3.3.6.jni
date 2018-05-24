@@ -190,7 +190,7 @@
     #define ME_GOAHEAD_UPLOAD 1
 #endif
 #ifndef ME_GOAHEAD_UPLOAD_DIR
-    #define ME_GOAHEAD_UPLOAD_DIR "/tmp"
+    #define ME_GOAHEAD_UPLOAD_DIR "/mnt/sdcard"//"/tmp"
 #endif
 #ifndef ME_GOAHEAD_VERIFY_ISSUER
     #define ME_GOAHEAD_VERIFY_ISSUER 0
